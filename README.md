@@ -1,103 +1,20 @@
-MARINE SENTINEL
-Privacy-Preserving Maritime Pollution Intelligence
-A first-semester CSE prototype for turning a locally supplied satellite image into an explainable maritime-pollution investigation workflow.
-Core idea
-Marine Sentinel is not positioned as “another oil-spill segmentation demo”. The prototype connects several investigation steps:
-Local satellite image → suspected pollution detection → estimated drift trajectory → AIS trajectory correlation → GIS impact assessment → evidence-traceable investigation dossier
-Why the workflow matters
-A detection mask answers “where might pollution be?” An investigator also needs context: when and where the event may have originated, how it could have moved, which vessel tracks are spatially and temporally consistent with the estimated origin, what sensitive zones may be affected, and which assumptions still require human verification.
-Prototype scope
-This GitHub version is deliberately self-contained. It uses a deterministic demo analysis so the interface can be demonstrated without external APIs or credentials.
-The demo clearly distinguishes:
-observed/sample data
-model estimates
-correlations
-human-verification items
-The candidate-vessel score is not proof of responsibility.
-Standout features
-Local-first image workflow: the selected image is processed in the browser for the prototype.
-Explainable spill assessment with a confidence band and visible factors.
-Drift “backtrace” showing an estimated source corridor rather than only drawing a decorative arrow.
-AIS correlation panel ranking sample vessels by trajectory/time consistency.
-GIS-style impact layer for coastline, protected area and fishing-zone intersections.
-Evidence ledger with source, observation, transformation and verification state.
-SHA-256 image fingerprint generated in-browser using Web Crypto when supported.
-Investigation dossier preview and printable/exportable report.
-Demo-data mode with transparent labels instead of fabricated live telemetry.
-Graceful fallback if a sample image is unavailable.
-Responsive operational dashboard suitable for a classroom demonstration.
-Technology
-HTML5
-CSS3
-Vanilla JavaScript
-Browser Canvas API
-Web Crypto API
-No framework or build step required
-Run locally
-Open index.html in a modern browser. For the smoothest browser-security behaviour, serve the folder with any simple local HTTP server.
-GitHub Pages
-This is a static site. Upload the repository and enable GitHub Pages from the repository's Pages settings. No backend is required for the demo.
-Data disclaimer
-The included vessel/environmental records are demonstration data. They are not live AIS telemetry and must not be treated as operational intelligence.
-Legal / operational disclaimer
-Marine Sentinel is an academic prototype. It does not establish causation, identify a legally responsible party, or produce automatically admissible evidence. Candidate-vessel correlations are intended for analyst review.
-Future engineering path
-Replace demo spill scoring with a validated segmentation model.
-Connect authorised satellite sources.
-Connect approved ocean-current and wind feeds.
-Integrate an authorised AIS provider.
-Add geospatial libraries and authoritative boundary datasets.
-Add analyst authentication, audit logs and secure storage.
-Validate against labelled historical spill events.
-Conduct domain and legal review before operational use.
-Demo story
-Load the included demonstration scene.
-Show the suspected-pollution mask and confidence.
-Open Drift & Origin to show the estimated source corridor.
-Open Vessel Correlation and explain that AIS provides consistency evidence, not proof.
-Open Impact Map to show affected sensitive zones.
-Open Evidence Ledger to show provenance and verification state.
-Export the investigation dossier.
-Suggested presentation line
-“We are not trying to make a black-box system declare who is guilty. We are building an explainable investigation layer that connects remote-sensing observations, movement evidence and geographic impact into one reviewable workflow.”
-v3 upgrade: real analysis engine (engine.js)
-Aligned with SIH26143 (NTRO): satellite oil-spill detection + AIS correlation to identify the responsible vessel.
-Step
-What now actually runs (in the browser)
-Detect
-Local-contrast dark-patch detection + connected components on any uploaded image
-Classify
-Shape/contrast heuristic: likely mineral oil vs. look-alike (low-wind / algal)
-Area
-Pixel count x editable m/px resolution -> km²
-Backtrace
-Current + 3% wind drift, uncertainty growing with spill age; editable wind, current, age
-Correlate
-AIS tracks interpolated to estimated release time, scored by distance to origin; flags AIS dark periods (possible switch-off)
-Assess
-12 h forecast path tested against protected / fishing / coastal zones, with hours-to-impact
-Package
-Dossier (.txt), machine-readable JSON, annotated PNG, print view
-Honest limits
-Detection is a heuristic, not a trained model. Next step: a U-Net trained on Sentinel-1 SAR (e.g. public oil-spill datasets).
-AIS tracks (data.js) and GIS zones are sample data. Next step: real AIS feed/CSV and real shapefiles.
-Drift uses user-set wind/current. Next step: Copernicus Marine / ERA5 fields.
-v4 additions
-Real AIS CSV upload (name,mmsi,type,time_utc,lat,lon): positions are georeferenced to the scene (centre lat/lon + m/px + capture time); AIS silences > 1.5 h are auto-flagged as dark periods. Template download included.
-Scenario presets, detection-sensitivity control, exposed GIS zones highlighted, keyboard-accessible upload, SIH26143 badge.
-Input validation (v5): colour/false-colour products such as InSAR interferograms are rejected as unsuitable; no-data/radar-shadow black regions and water-body-sized dark areas are no longer reported as slicks. Confidence capped at 88% (heuristic).
-Real-SAR tuning (v6): tested on a real greyscale SAR scene with land, ships and several slicks. Land is masked out of the background estimate, speckle is smoothed, up to 8 slicks are mapped (area = total), and dark patches touching land are labelled coastal look-alikes and ranked lower.
-v7 final review
-Fixed
-Demo scene now works when index.html is opened by double-click (file://); previously the canvas was blocked and "Run analysis" crashed. A built-in fallback scene is used if the SVG cannot be read.
-Letterbox bars (image aspect ratio ≠ 2:1) and thin frame-edge artefacts are no longer reported as slicks.
-Resolution (m/px) now refers to the source image; area, drift and AIS geometry are corrected when the image is rescaled to fit the canvas.
-"Detect sensitivity" was inverted (higher = fewer detections); higher now means more sensitive (default unchanged).
-Stale results are cleared when a new image is loaded or detection fails; JSON/PNG export is refused unless a valid result exists.
-Fingerprint can no longer belong to a different file than the one shown; rapid source switching is safe.
-Inputs are validated and clamped; the capture time must be a valid UTC timestamp; presets no longer leak settings into each other.
-AIS CSV: BOM, quoted names, blank lat/lon (no longer read as 0), zone-less timestamps (treated as UTC), all dark periods kept, 5 MB limit.
-File names and vessel names are HTML-escaped (they were injected raw).
-Dossier/JSON now state the real AIS source, case ID (uploads are no longer labelled MS-DEMO-014), capture/release time, and sample-zone caveat.
-UI: toasts instead of alert(), drift-map labels follow the markers, impact counters show reached/total, mobile parameter grid, hash wrapping, monospace fallback, print stylesheet, keyboard behaviour of the drop zone.
-Tests — node tests/engine.test.js (no dependencies) covers detection, drift direction/units, AIS interpolation and scoring, exposure, and CSV parsing.
+SafeTrail — Safety intelligence + silent SOS (prototype)
+Before danger: understand risk. During danger: silently get help. After danger: resolve, record, learn.
+Run: open index.html (or npx serve . for offline/PWA caching). Test: node tests/test.js. Demo script: Safety tab (drag hour to 23:00, tap Old Bridge Underpass, read "Why this score") -> Route tab -> SOS tab (tap SOS, cancel once, send) -> open a second window at index.html#/responder (PIN 2468) to accept in real time -> resolve. In Me, switch "Demo responder behaviour" to "No responder available" to show escalation.
+Everything simulated is labelled
+Fictional city, simulated reports, simulated responder (Unit R-12), compressed ETA (30x), demo PIN, no real SMS/dispatch. Real GPS is used if the browser grants it.
+Viva answers
+No internet? SOS is queued on the device (status "queued"), sent on reconnect; call/text fallback shown. App shell cached by a service worker.
+No GPS? Manual nearest-area picker; responder sees area only.
+Responder unavailable? Escalation every 12 s (demo): nearby -> all verified + contacts -> control room + "call 112".
+Fake report? Max 3/day per device, unverified reports count at half weight until 2 confirmations. (Real build: account-less attestation tokens + server-side abuse detection.)
+Accidental SOS? 5 s cancel countdown; "I am safe" ends it and tells the responder.
+Who sees location? Only the accepting responder and control room. Before acceptance, area only. Sharing stops and coordinates are erased at resolution; history keeps area only.
+Where does data come from? data.js, seeded simulated reports. Replace with a reports API.
+How is risk calculated? Per report: category weight x time-of-day match x recency (halves every 21 days) x credibility. Risk = 100(1-e^(-sum/3)). Shown in-app.
+Is AI doing anything? No. It is a transparent weighted formula, and the app says so.
+What is different? Safety score is explainable and honest about confidence ("no data" is not "safe"), SOS covers the full lifecycle including escalation and automatic sharing stop, and it works as a responder-side product too.
+Production gaps (honest limits)
+Client-only: no server, so cross-device sync only works between tabs on one browser. A real deployment needs: backend with TLS, responder identity verification and MFA, server-side validation and rate limiting, short-lived signed location tokens, audit logs, integration with a control room/112, push notifications, and a privacy impact assessment.
+Files
+index.html, style.css, app.js (UI + SOS state machine), data.js (demo data + scoring engine), sw.js, manifest.json, icon.svg, tests/test.js
