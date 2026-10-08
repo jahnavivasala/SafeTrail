@@ -1,0 +1,3 @@
+const C='safetrail-v1',F=['./','index.html','style.css','data.js','app.js','icon.svg'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(F))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
